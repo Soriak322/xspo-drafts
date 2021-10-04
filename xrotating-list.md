@@ -1,6 +1,6 @@
 ## [Proposal] The xRotating List
 
-### Introduction
+### 0. Introduction
 
 Goal: **helping small pools to mint their first blocks and attract enough natural delegators by temporarily inflating their stake**
 
@@ -23,7 +23,7 @@ With P participants, the List is of size `P`. `N` is the number of Ouroboros epo
 Example: with `P`=25 participants in the List, each of them having declared 2k ₳ as a commitment to delegate to the "Top Pool", the pool in Slot #1 is granted a stake of 50k ₳ for `N`=3 Ouroboros epochs.
 
 
-### Rules
+### 1. Rules
 
 #### Basics
 
@@ -89,7 +89,7 @@ Penalties take effect immediately and are described in the "Table of Penalties".
 Each condition, rule and parameter can be created, updated or deleted by the xSPO Alliance members that are in the List for more than 5 Ouroboros epochs. These decisions are collectively built through proposals and votes. A proposal becomes a collective decision by gathering at least a majority of 50% of expressed votes plus one vote during one Ouroboros epoch.
 
 
-### Parameters
+### 2. Parameters
 
 **Conditions to be in the xRotating List** :
 
@@ -157,7 +157,7 @@ Each condition, rule and parameter can be created, updated or deleted by the xSP
 - max participants `P` : 50
 
 
-#### Starting the xRotating List
+### 3. Starting the xRotating List
 
 If tested, the List will have to convince xSPO Alliance members to step into the project and this will take time. The List should be started after at least 5 members have declared their intention to test it during a Closed Alpha for at least 5 Ouroboros epochs with a reduced set of parameters (e.g. "everyone uses a DC of 1k ₳" ; "no penalties will be applied" ; "`N` is fixed to 1" ; etc.).
 
