@@ -15,44 +15,46 @@ The main idea would be to massively delegate staked wallets to one of us during 
 | N   | Slot #1     |  ] "Hot seat" |
 |     | Slot #2     |  ] "Hot seat" |
 |     | ...         |               |
-|     | Slot #P-1   |               |
-|     | Slot #P     |               |
+|     | Slot #`P`-1   |               |
+|     | Slot #`P`     |               |
 
-With P participants, the List is of size P. N is the number of Ouroboros epochs the pool in Slot #1 will benefit from the Common Stake (CS).
+With P participants, the List is of size `P`. `N` is the number of Ouroboros epochs the pool in Slot #1 will benefit from the Common Stake (`CS`). The Common Stake (`CS`) is the sum of the all staked wallets that pools operators in the List have declared to be used in this xRotating system.
+
+Example: with `P`=25 participants in the List, each of them having declared 2k ₳ as a commitment to delegate to the "Top Pool", the pool in Slot #1 is granted a stake of 50k ₳ for `N`=3 Ouroboros epochs.
 
 
 ### Rules
 
 #### Basics
 
-- To enter the List, each wannabe participant declare the address of a wallet of his own with X₳ in it as a request. And this request will have to be validated. 
+- To enter the List, each wannabe participant declare the address of a wallet of his own with `X` ₳ in it as a request. And this request will have to be validated. 
 
-- The initial Delegation Commitment (initial DC) corresponds to the declaration of the participant in this first request.
+- The initial Delegation Commitment (initial `DC`) corresponds to the declaration of the participant in this first request.
 
-- A request to enter the list is valida if the following conditions are met:
-  - the wallet at the provided address ("Delegated Wallet") contains at least 500₳
-  - the "Delegated Wallet" contains at least the initial DC
+- A request to enter the list is valid if the following conditions are met:
+  - the wallet at the provided address ("Delegated Wallet" `DW`) contains at least 500 ₳
+  - the "Delegated Wallet" contains at least the initial `DC`
   - the requesting stake pool has less than 3% in margin
-  - the requesting stake pool has less than 500₳ in fees
+  - the requesting stake pool has less than 500 ₳ in fees
   - the requesting stake pool has minted less than 50 lifetime blocks
 
 - These "Conditions to be in the xRotating List" will be checked at least one time per Ouroboros epoch ("Verifications")
 
-- Each time a new stake pool join the List, a new slot is added to the end of the List and the position of the joining pool is set to Slot #P. 
+- Each time a new stake pool join the List, a new slot is added to the end of the List and the position of the joining pool is set to Slot #`P`. 
 
-- A Phase is a sequence of Ouroboros epochs during which N > 0.
+- A Phase is a sequence of Ouroboros epochs during which `N` > 0.
 
-- At the beginning of a Phase, all xDelegators' wallets ("Delegated Wallets") are delegated to the pool in Slot #1 and a new value of N is computed with respected to the Parameters.
+- At the beginning of a Phase, all xDelegators' wallets ("Delegated Wallets") are delegated to the pool in Slot #1 and a new value of `N` is computed with respected to the Parameters.
 
-- When a pool reaches Slot #1, it can stay there for N Ouroboros epochs. This N is computed according to the "Table of Phase stages" which relies on how many ₳ are in the DC.
+- When a pool reaches Slot #1, it can stay there for `N` Ouroboros epochs. This `N` is computed according to the "Table of Phase stages" which relies on how many ₳ are in the intial or updated `DC`.
 
 - Notifications are sent by the xSupervisors of the List to indicate to each xDelegators that they need to change their delegation for the Delegated Wallet during the current Ouroboros epoch.
 
-- At the end of a Phase, the List is shifted, N is reset and a new Phase begins.
+- At the end of a Phase, the List is shifted, `N` is reset and a new Phase begins.
 
-- After being in Slot #1 for N epochs, a pool has to stay in the List for some epochs in order to let the other pools benefit from what it has benefited. The "Table of Epochs of Commitment" shows when a former Slot #1 pool wishing to leave the group can be leaving the List and remove its stake from the Common Stake without being considered in fault.
+- After being in Slot #1 for `N` epochs, a pool has to stay in the List for some epochs in order to let the other pools benefit from what it has benefited. The "Table of Epochs of Commitment" shows when a former Slot #1 pool wishing to leave the group can be leaving the List and remove its stake from the Common Stake without being considered in fault.
 
-- The initial DC can be increased and then be called "updated DC" but the next time the pool will be in Slot #1, N can only increment by 1 (if a treshold from the "Table of Phases stages" is crossed by the new amount in DC). The correct value for N according to the "Table of Phases stages" will be accessible the next time the pool is in Slot #1 after this one.
+- The initial DC can be increased and then be called "updated `DC`" but the next time the pool will be in Slot #1, `N` can only increment by 1 (if a treshold from the "Table of Phases stages" is crossed by the new amount in DC). The correct value for N according to the "Table of Phases stages" will be accessible the next time the pool is in Slot #1 after this one.
 
 - A pool which has been excluded from the list can re-enter after its exclusion time if it meets the "Conditions to be in the xRotating List". A pool which has been permanently excluded cannot enter the List again.
 
@@ -67,36 +69,40 @@ Phase       [      1      ][                     2                     ][       
 Notif.                                         *X X*                         *X X*
 ```
 
-At the beginning of a new Ouroboros epoch e:
-- if N = 0, each pool goes up by one Slot: a pool previously in Slot #S now takes place in Slot #S-1. The pool in Slot #1 is moved to Slot #P. And a new Phase begins that will set a new value for N.
-- if N > 0, N is decremented, i.e. N(e) = N(e-1) - 1
-  - and if N = 1, xDelegators receive notifications from the xSupervisors that invite them to delegate to the pool that will be in Slot #1 in the next Phase.
+At the beginning of a new Ouroboros epoch `e`:
+- if `N` == 0, each pool goes up by one Slot: a pool previously in Slot #`S` now takes place in Slot #`S`-1. The pool in Slot #1 is moved to Slot #`P`. And a new Phase begins that will set a new value for `N`.
+- if `N` > 0, N is decremented, i.e. `N`(`e`) = `N`(`e`-1) - 1
+  - and if `N` == 1, xDelegators receive notifications from the xSupervisors that invite them to delegate to the pool that will be in Slot #1 in the next Phase.
 
-#### Rules breaking:
+#### Rules breaking
 
 If a pool breaks a rule it receives penalties which depend on the severity of the fault. 
 
 Penalties take effect immediately and are described in the "Table of Penalties".
 
-N is set to 1 and all xDelegators are immediately notified to modify the pool they are delegated their Delegated Wallet:
+`N` is set to 1 and all xDelegators are immediately notified to modify the pool they are delegated their Delegated Wallet:
 - if a pool currently in Slot #1 or #2 breaks some of the rules can be excluded from the List
-- if a pool in Slot #1 mints mB blocks while its associated N > 0
+- if a pool in Slot #1 mints `mB` blocks while its associated `N` > 0
+
+#### Governance
+
+Each condition, rule and parameter can be created, updated or deleted by the xSPO Alliance members that are in the List for more than 5 Ouroboros epochs. These decisions are collectively built through proposals and votes. A proposal becomes a collective decision by gathering at least a majority of 50% of expressed votes plus one vote during one Ouroboros epoch.
 
 
 ### Parameters
 
 **Conditions to be in the xRotating List** :
 
-- the wallet at the provided address ("Delegated Wallet") contains at least **500**₳
-- the "Delegated Wallet" contains at least the initial DC
+- the wallet at the provided address ("Delegated Wallet" `DW`) contains at least **500** ₳
+- the "Delegated Wallet" contains at least the initial `DC`
 - the requesting stake pool has less than **3**% in margin
-- the requesting stake pool has less than **500**₳ in fees
+- the requesting stake pool has less than **500** ₳ in fees
 - the requesting stake pool has minted less than **50** lifetime blocks
 
 
-**Table of Phases stages (N)**
+**Table of Phases stages (`N`)**
 
-|₳ in initial DC   |  N  |  #epochs|
+|₳ in **initial** `DC`   |  `N`  |  #epochs|
 |---|---|---|
 |0.5k   to 1.0k    |  1  |  2|
 |1.0k   to 2.5k    |  2  |  3|
@@ -105,9 +111,9 @@ N is set to 1 and all xDelegators are immediately notified to modify the pool th
 |50.0k  and more   |  5  | 6 |
 
 
-**Table of maximum blocks per Phase (mB)**
+**Table of maximum blocks per Phase (`mB`)**
 
-| ₳ in initial DC   |  mB|
+| ₳ in **initial** `DC`   |  `mB`|
 |---|---|
 |0.5k   to 1.0k    |  infinity|
 |1.0k   to 2.5k    |  infinity|
@@ -120,15 +126,15 @@ N is set to 1 and all xDelegators are immediately notified to modify the pool th
 
 **Table of Epochs of Commitment**
 
-|₳ in updated DC    |  #epochs before leaving the List|
+|₳ in **updated** `DC`    |  #epochs before leaving the List|
 |---|---|
-|0.5k   to 1.0k    |  if P < 5 then P else 5|
-|1.0k   to 2.5k    |  if P < 5 then P else 5|
-|2.5k   to 10.0k   |  if P < 4 then P else 4|
-|10.0k  to 25.0k   |  if P < 4 then P else 4|
-|10.0k  to 50.0k   |  if P < 3 then P else 3|
-|50.0k  to 100.0k  |  if P < 3 then P else 3|
-|100.0k and more   |  if P < 2 then P else 2|
+|0.5k   to 1.0k    |  if `P` < 5 then `P` else 5|
+|1.0k   to 2.5k    |  if `P` < 5 then `P` else 5|
+|2.5k   to 10.0k   |  if `P` < 4 then `P` else 4|
+|10.0k  to 25.0k   |  if `P` < 4 then `P` else 4|
+|10.0k  to 50.0k   |  if `P` < 3 then `P` else 3|
+|50.0k  to 100.0k  |  if `P` < 3 then `P` else 3|
+|100.0k and more   |  if `P` < 2 then `P` else 2|
 
 
 **Table of Penalties**
@@ -136,7 +142,7 @@ N is set to 1 and all xDelegators are immediately notified to modify the pool th
 |---|---|---|
 |F1| delegating to the wrong pool in the List (exception : the pool in Slot #1 can delegate to any other pool in the xRotating List during its Phase)|1 Slot down|
 |F2| delegating to a pool that is not in the List|2 Slots down|
-|F3| decreasing the amount of ₳ in DC|3 Slots down|
+|F3| decreasing the amount of ₳ in **updated** `DC`|3 Slots down|
 |F4| not respecting the "Conditions to be in the xRotating List"| 4 Slots down|
 |F5| not respecting the "Table of Epochs of Commitment"| permanent exclusion| 
 |R1| 3 successive epochs with F1        | exclusion for 5 epochs |
@@ -148,4 +154,11 @@ N is set to 1 and all xDelegators are immediately notified to modify the pool th
 |X3| F1/F2/F3/F4/F5 while in Slot #P after being in Slot #1                               | permanent exclusion |
 
 **Hyper-parameters**
-- max participants : 50
+- max participants `P` : 50
+
+
+#### Starting the xRotating List
+
+If tested, the List will have to convince xSPO Alliance members to step into the project and this will take time. The List should be started after at least 5 members have declared their intention to test it during a Closed Alpha for at least 5 Ouroboros epochs with a reduced set of parameters (e.g. "everyone uses a DC of 1k ₳" ; "no penalties will be applied" ; "`N` is fixed to 1" ; etc.).
+
+When tested, the first "real" List should be started with at least 10 members and all the voted paramaters. The first challenge would be to decide the Slot attribution: according to the first redactor of this document, randomness is the the best choice in terms of equality but equity could be achieve using the ascending order of the stake of each pool  in the List for the previous Ouroboros epoch.
